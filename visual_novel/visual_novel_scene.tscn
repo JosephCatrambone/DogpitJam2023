@@ -1,0 +1,90 @@
+[gd_scene load_steps=5 format=3 uid="uid://dmokb8m05268r"]
+
+[ext_resource type="Theme" uid="uid://domv3v8hllefw" path="res://main_theme.tres" id="1_56jud"]
+[ext_resource type="Script" path="res://visual_novel/visual_novel_scene.gd" id="1_dh33b"]
+[ext_resource type="Texture2D" uid="uid://qjin4x3sq4iy" path="res://assets/cafe_blurred.png" id="3_5hg7u"]
+[ext_resource type="Texture2D" uid="uid://l7mgppwkjkrr" path="res://assets/blue.svg" id="3_46g25"]
+
+[node name="VisualNovelScene" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_56jud")
+script = ExtResource("1_dh33b")
+
+[node name="Background" type="TextureRect" parent="."]
+unique_name_in_owner = true
+self_modulate = Color(0.517647, 0.517647, 0.517647, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_5hg7u")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Speakers" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="SpeakerTemplate" type="TextureRect" parent="MarginContainer/VBoxContainer/Speakers"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("3_46g25")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="DialogOutput" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "It's really a shame how a family can be torn apart by something as silly as a pack of wild animals."
+scroll_following = true
+shortcut_keys_enabled = false
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Choices" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Prompt" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CenterContainer/Choices"]
+unique_name_in_owner = true
+clip_contents = false
+custom_minimum_size = Vector2(800, 0)
+layout_mode = 2
+text = "Choices:"
+fit_content = true
+scroll_active = false
+
+[node name="ButtonTemplate" type="Button" parent="MarginContainer/VBoxContainer/CenterContainer/Choices"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Selection 1"

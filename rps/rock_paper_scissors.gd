@@ -1,8 +1,11 @@
 extends Node2D
 
-@export var num_actors: int = 50
+signal game_complete(GameOutcome)  # True if player won.
+
+@export var num_actors: int = 20
 var actor_prefab: PackedScene = preload("res://rps/rps_actor.tscn")
 var actors: Array[Node2D] = []
+var player_choice: RPSActorType = null  # Who did the player select to win?
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -19,6 +22,7 @@ func _ready():
 func _process(delta):
 	self.check_winner()
 
+
 func check_winner():
 	var actor_counts = {
 		RPSActorType.ROCK: 0,
@@ -30,5 +34,9 @@ func check_winner():
 		actor_counts[t] += 1
 	for at in actor_counts.keys():
 		if actor_counts[at] == num_actors:
-			print("Winner: ", at)
-			get_tree().reload_current_scene()
+			var player_win_state = GameOutcome.LOSE
+			if at == self.player_choice:
+				player_win_state = GameOutcome.WIN
+			emit_signal("game_complete", player_win_state)
+			# DEBUG: Restart
+			#get_tree().reload_current_scene()

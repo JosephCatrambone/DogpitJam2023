@@ -1,14 +1,15 @@
 extends Area2D
 
 const PADDING = 50
-const SPEED = 300.0
+const SPEED = 200.0
 const TICKS_BETWEEN_AI_CHECKS = 15
 
+@export var ai_attention_size: int = 10  # How many of the 'top_n' should we keep?
 @export var ai_aggression: float = 1.0  # How much the AI will seek prey.
 @export var ai_fear: float = 1.0  # How much the AI will avoid predators.
 @export var ai_flock: float = 0.01  # How much will the AI move towards the like.
 @export var ai_spread: float = 0.1  # How much will the AI move away from the like.
-@export var ai_stay_centered: float = 0.007  # How much will the AI move towards the center?
+@export var ai_stay_centered: float = 0.0001  # How much will the AI move towards the center?
 @export var ai_chaos: float = 0.01  # How much will the AI move randomly?
 var ticks_to_next_ai_run: int = 0
 
@@ -36,6 +37,12 @@ func randomize_state():
 	self.position.x = randi_range(PADDING, get_viewport_rect().size.x-PADDING)
 	self.position.y = randi_range(PADDING, get_viewport_rect().size.y-PADDING)
 	self.state = [RPSActorType.ROCK, RPSActorType.PAPER, RPSActorType.SCISSORS][randi()%3]
+
+
+func for_each_sprite(fn: Callable):
+	fn.call(%RockSprite)
+	fn.call(%PaperSprite)
+	fn.call(%ScissorsSprite)
 
 
 func get_predator_type():
@@ -80,9 +87,11 @@ func _process(delta):
 
 func run_ai():
 	self.volition_vector = Vector2.ZERO
-	# TODO: This is kinda' hacky.  We have to get the parent to get the children.
 	var move_toward_type = self.get_prey_type()
 	var move_away_from_type = self.get_predator_type()
+	var nearest: float = 1e100
+	var movement_list: PackedVector2Array = PackedVector2Array()
+	# TODO: This is kinda' hacky.  We have to get the parent to get the children.
 	for c in self.get_parent().get_children():
 		if c == self:
 			continue
@@ -91,14 +100,21 @@ func run_ai():
 			var delta_length: float = delta_position.length()
 			if delta_length < 1e-4:
 				continue  # Screwed
-			var other_state = c.get_rps_state()
-			if other_state == move_toward_type:
-				self.volition_vector += delta_position.normalized()*self.ai_aggression / sqrt(delta_length)
-			elif other_state == move_away_from_type:
-				self.volition_vector -= delta_position.normalized()*self.ai_fear / sqrt(delta_length)
-			else:
-				self.volition_vector -= delta_position.normalized()*self.ai_spread / sqrt(delta_length)
-				self.volition_vector += delta_position.normalized()*self.ai_flock / sqrt(delta_length)
+			if delta_length < nearest:
+				var other_state = c.get_rps_state()
+				if other_state == move_toward_type:
+					movement_list.append(delta_position.normalized()*self.ai_aggression / sqrt(delta_length))
+				elif other_state == move_away_from_type:
+					movement_list.append(-delta_position.normalized()*self.ai_fear / sqrt(delta_length))
+				else:
+					movement_list.append(-delta_position.normalized()*self.ai_spread / sqrt(delta_length))
+					movement_list.append(delta_position.normalized()*self.ai_flock / sqrt(delta_length))
+				nearest = delta_length
+	# We have a list of a bunch of potential targets.  Not all of them, just a subset, and we approach all of them with exponentially decreasing attention.
+	movement_list.reverse()
+	movement_list = movement_list.slice(0, self.ai_attention_size)
+	for i in range(len(movement_list)):
+		self.volition_vector += movement_list[i] / pow(2, i)
 	# Also try and keep things away from the edges.  Mild force towards the middle.
 	var delta_center: Vector2 = (get_viewport_rect().size*0.5) - self.global_position
 	self.volition_vector += delta_center*self.ai_stay_centered

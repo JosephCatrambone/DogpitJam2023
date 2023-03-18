@@ -1,0 +1,38 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://domv3v8hllefw"]
+
+[ext_resource type="FontFile" uid="uid://c12gwptxuh4p0" path="res://assets/ComicNeue-Regular.ttf" id="1_2jqed"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0n86j"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.0941176, 0.0941176, 0.0941176, 0.901961)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 1)
+border_blend = true
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+anti_aliasing_size = 1.0
+
+[resource]
+default_font = ExtResource("1_2jqed")
+default_font_size = 32
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/colors/font_outline_color = Color(0, 0, 0, 1)
+Label/font_sizes/font_size = 32
+Label/fonts/font = ExtResource("1_2jqed")
+RichTextLabel/colors/default_color = Color(1, 1, 1, 1)
+RichTextLabel/colors/font_outline_color = Color(0, 0, 0, 1)
+RichTextLabel/constants/outline_size = 4
+RichTextLabel/font_sizes/bold_font_size = 36
+RichTextLabel/font_sizes/bold_italics_font_size = 32
+RichTextLabel/font_sizes/italics_font_size = 32
+RichTextLabel/font_sizes/mono_font_size = 32
+RichTextLabel/font_sizes/normal_font_size = 32
+RichTextLabel/styles/normal = SubResource("StyleBoxFlat_0n86j")
