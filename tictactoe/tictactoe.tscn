@@ -1,0 +1,62 @@
+[gd_scene load_steps=6 format=3 uid="uid://ciq1oexdprjbb"]
+
+[ext_resource type="Script" path="res://tictactoe/tictactoe.gd" id="1_ge3f1"]
+[ext_resource type="Texture2D" uid="uid://dv6v1jmkc3qi1" path="res://tictactoe/atlas_empty.atlastex" id="2_6ql66"]
+[ext_resource type="Texture2D" uid="uid://bxcj0dk3rgd6" path="res://tictactoe/atlas_x.atlastex" id="2_b8o3u"]
+[ext_resource type="Texture2D" uid="uid://bkjg4ykr8xg6m" path="res://tictactoe/atlas_o.atlastex" id="4_3cx4k"]
+[ext_resource type="Texture2D" uid="uid://cxtw8utrtv2mb" path="res://tictactoe/tictactoe_stones_board.png" id="5_nfwvm"]
+
+[node name="TicTacToe" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_ge3f1")
+
+[node name="Mark" type="TextureButton" parent="."]
+visible = false
+layout_mode = 1
+offset_right = 128.0
+offset_bottom = 128.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource("2_6ql66")
+texture_hover = ExtResource("2_b8o3u")
+
+[node name="X" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_b8o3u")
+
+[node name="O" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("4_3cx4k")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CenterContainer"]
+layout_mode = 2
+texture = ExtResource("5_nfwvm")
+stretch_mode = 1
+
+[node name="Board" type="GridContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(384, 384)
+layout_mode = 2
+columns = 3

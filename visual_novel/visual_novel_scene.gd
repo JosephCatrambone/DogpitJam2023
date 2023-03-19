@@ -11,12 +11,16 @@ var _loaded: bool = false
 var _raw_data: Dictionary
 var actor_name_to_texture_rect: Dictionary = {}
 var character_index_to_actor_switch: Dictionary = {}  # Maps an integer to an actor or actor:emote combo.
+var next_scene: String = ""
+var minigame_name: String = ""
+var minigame_outcomes: Dictionary = {}  # Maps to game_outcome.
 
 # These will all be reinitialized in their respective _load_x functions because .load(...) might be called before ready.
 @onready var bg: TextureRect = %Background
-@onready var dialog_out: RichTextLabel = %DialogOutput
 @onready var speaker_images: HBoxContainer = %Speakers
-@onready var choices: VBoxContainer = %Choices
+@onready var dialog_out: RichTextLabel = %DialogOutput
+@onready var prompt_and_choices: Control = %PromptAndChoices
+@onready var choices: GridContainer = %Choices
 @onready var prompt: RichTextLabel = %Prompt
 
 @onready var speaker_template: TextureRect = %SpeakerTemplate
@@ -25,17 +29,23 @@ var character_index_to_actor_switch: Dictionary = {}  # Maps an integer to an ac
 
 func _ready():
 	self.speaker_images.remove_child(self.speaker_template)
-	self.choices.remove_child(self.button_template)
+	self.button_template.get_parent().remove_child(self.button_template)
+	self.dialog_out.visible = true
+	self.prompt_and_choices.visible = false
 
 
 func _process(delta):
 	self._maybe_advance_dialog(delta)
 
 
+func goto_title():
+	get_tree().change_scene_to_file("res://menus/title.tscn")
+
+
 func load_dialog(data: Dictionary):
 	# See the reference scene.
 	# Named load_dialog instead of load to avoid name conflict.
-	for required_field in ["background", "actors", "text", "prompt", "options", "next", "on_enter", "minigame", "minigame_outcome"]:
+	for required_field in ["background", "actors", "text", "prompt", "options", "next", "on_enter", "minigame", "minigame_outcome", "next"]:
 		if not data.has(required_field):
 			printerr("Scene missing required field: ", required_field)
 	self._raw_data = data
@@ -46,8 +56,14 @@ func _finish_loading():
 	self._load_bg(self._raw_data)
 	self._load_actors(self._raw_data)
 	self._load_choices(self._raw_data)
+	self._load_minigame(self._raw_data)
 	self._load_text(self._raw_data)
+	self.next_scene = self._raw_data["next"]
+	var on_enter_command:String = self._raw_data["on_enter"]
 	self._loaded = true
+	
+	if not on_enter_command.is_empty():
+		self.call(on_enter_command)
 
 
 func _load_bg(data: Dictionary):
@@ -62,7 +78,6 @@ func _load_bg(data: Dictionary):
 
 func _load_actors(data: Dictionary):
 	# Load actors into places.
-	var actors = []
 	self.actor_name_to_texture_rect.clear()
 	for c in self.speaker_images.get_children():
 		self.speaker_images.remove_child(c)
@@ -78,12 +93,30 @@ func _load_choices(data: Dictionary):
 	# Preload prompt+option text.
 	self.prompt.text = data["prompt"]
 	for old_choice in self.choices.get_children():
+		if old_choice == self.prompt:
+			# HACK!
+			# Don't free the prompt!
+			continue
 		self.choices.remove_child(old_choice)
 		old_choice.queue_free()
-	for prompt_name in data["options"].keys():
+	for opt_text in data["options"].keys():
 		var choice: Button = button_template.duplicate()
-		choice.text = prompt_name
-		choice.pressed.connect(func(): self._on_choice_pressed(data["options"][choice]))
+		choice.text = opt_text
+		var next_scene = data["options"][opt_text]
+		choice.pressed.connect(func(): StoryManager.switch_scene(next_scene))
+		self.choices.add_child(choice)
+	if len(data["options"]) > 0 and self.prompt.text.is_empty():
+		printerr("WARNING: Got 'prompt' with no options!  Make sure the text shows options!")
+
+
+func _load_minigame(data: Dictionary):
+	self.minigame_name = data['minigame']
+	if not self.minigame_name.is_empty():
+		self.minigame_outcomes = {
+			GameOutcome.GameOutcome.WIN: data['minigame_outcome']['win'],
+			GameOutcome.GameOutcome.LOSE: data['minigame_outcome']['lose'],
+			GameOutcome.GameOutcome.DRAW: data['minigame_outcome']['draw'],
+		}
 
 
 func _load_text(data: Dictionary):
@@ -114,11 +147,6 @@ func _load_text(data: Dictionary):
 	#tr.texture.get_image().load_png_from_buffer()
 
 
-func _on_choice_pressed(new_scene):
-	StoryManager.switch_scene(new_scene)
-
-
-
 func _maybe_advance_dialog(delta):
 	if self.text_advancement_paused_on_input:
 		if Input.is_anything_pressed() or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -132,17 +160,20 @@ func _maybe_advance_dialog(delta):
 	if self.time_to_next_character <= 0.0 and self.dialog_out.visible_characters < len(self.dialog_out.text):
 		# Advance the caret:
 		self.time_to_next_character = self.time_between_characters
-		var last_char_output = self.dialog_out.text[self.dialog_out.visible_characters]
 		self.dialog_out.visible_characters += 1
+		var last_char_output = ''
+		if self.dialog_out.visible_characters < len(self.dialog_out.text):
+			last_char_output = self.dialog_out.text[self.dialog_out.visible_characters]
 		
 		# Check if we need to pause.
 		if last_char_output == '.':
 			self.time_to_next_character *= self.period_pause_time_scale
-		if last_char_output == "\n" or self.character_index_to_actor_switch.has(self.dialog_out.visible_characters + 1):
+		if last_char_output == "\n" or self.character_index_to_actor_switch.has(self.dialog_out.visible_characters+1):
 			self.text_advancement_paused_on_input = true
 		
 		# We are changing speakers:
 		# TODO: This triggers at the same time as the delay.
+		# TODO: This does not trigger expression changes if they happen at character zero, so we have to hack it and add a space or a newline.
 		if self.character_index_to_actor_switch.has(self.dialog_out.visible_characters):
 			var new_visible_character: String = self.character_index_to_actor_switch[self.dialog_out.visible_characters]
 			var new_speaker: String = ""
@@ -157,7 +188,20 @@ func _maybe_advance_dialog(delta):
 		# Finishing the dialog:
 		if self.dialog_out.visible_ratio >= 1.0:
 			# Done!
-			print("Done!")
+			# We will automatically display options and move forward so that we can 'hack' stuff by making many scenes which automatically connect.
+			# If a player wants to pause before prompts, they can add '\n'.
+			if not self.prompt.text.is_empty():
+				self.dialog_out.visible = false
+				self.prompt_and_choices.visible = true
+			elif not self.minigame_name.is_empty():
+				var outcome = await GameManager.start_minigame(self.minigame_name)
+				StoryManager.switch_scene(self.minigame_outcomes[outcome])
+			elif not self.next_scene.is_empty():
+				StoryManager.switch_scene(self.next_scene)
+			else:
+				# We have no dialog active, no new scene, no prompts, and no minigame.
+				# Self destruct.
+				self.queue_free()
 
 
 func set_speaker(name: String, emotion: String = ""):

@@ -1,6 +1,18 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://domv3v8hllefw"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://domv3v8hllefw"]
 
 [ext_resource type="FontFile" uid="uid://c12gwptxuh4p0" path="res://assets/ComicNeue-Regular.ttf" id="1_2jqed"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qwjy6"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0, 0, 0.803922)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+anti_aliasing_size = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0n86j"]
 content_margin_left = 20.0
@@ -23,6 +35,7 @@ anti_aliasing_size = 1.0
 [resource]
 default_font = ExtResource("1_2jqed")
 default_font_size = 32
+Button/styles/normal = SubResource("StyleBoxFlat_qwjy6")
 Label/colors/font_color = Color(1, 1, 1, 1)
 Label/colors/font_outline_color = Color(0, 0, 0, 1)
 Label/font_sizes/font_size = 32

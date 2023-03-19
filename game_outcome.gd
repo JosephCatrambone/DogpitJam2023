@@ -1,5 +1,6 @@
 class_name GameOutcome
-enum {
+
+enum GameOutcome {
 	WIN,
 	LOSE,
 	DRAW,

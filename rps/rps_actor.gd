@@ -138,6 +138,8 @@ func _physics_process(delta):
 		self.volition_vector = Vector2.ZERO
 		self.volition_vector.x = Input.get_axis("move_left", "move_right")
 		self.volition_vector.y = Input.get_axis("move_up", "move_down")
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			self.volition_vector = get_local_mouse_position().normalized()
 	if self.volition_vector:
 		velocity = self.volition_vector.normalized() * SPEED
 	else:

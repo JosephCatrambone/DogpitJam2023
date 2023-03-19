@@ -34,9 +34,9 @@ func check_winner():
 		actor_counts[t] += 1
 	for at in actor_counts.keys():
 		if actor_counts[at] == num_actors:
-			var player_win_state = GameOutcome.LOSE
+			var player_win_state: GameOutcome.GameOutcome = GameOutcome.GameOutcome.LOSE
 			if at == self.player_choice:
-				player_win_state = GameOutcome.WIN
+				player_win_state = GameOutcome.GameOutcome.WIN
 			emit_signal("game_complete", player_win_state)
 			# DEBUG: Restart
 			#get_tree().reload_current_scene()

@@ -79,7 +79,7 @@ func _ready():
 	self.save_default_story()
 	var fin = FileAccess.open("user://default_story.json", FileAccess.READ)
 	self.load_story_from_json(fin.get_as_text())
-	
+
 
 func switch_scene(scene_name: String):
 	if is_instance_valid(self.active_scene):
@@ -88,5 +88,7 @@ func switch_scene(scene_name: String):
 		self.active_scene = null
 	var new_scene = self.vn_scene.instantiate()
 	get_tree().root.add_child.call_deferred(new_scene)  # Do this first!
+	if not self._story.has(scene_name):
+		printerr("Scene name '", scene_name, "' not found in story.")
 	new_scene.load_dialog(self._story[scene_name])
 	self.active_scene = new_scene

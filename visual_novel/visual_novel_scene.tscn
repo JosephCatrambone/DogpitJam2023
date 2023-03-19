@@ -67,15 +67,16 @@ text = "It's really a shame how a family can be torn apart by something as silly
 scroll_following = true
 shortcut_keys_enabled = false
 
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+[node name="PromptAndChoices" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="Choices" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CenterContainer"]
-unique_name_in_owner = true
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/PromptAndChoices"]
 layout_mode = 2
+alignment = 1
 
-[node name="Prompt" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CenterContainer/Choices"]
+[node name="Prompt" type="RichTextLabel" parent="MarginContainer/VBoxContainer/PromptAndChoices/VBoxContainer"]
 unique_name_in_owner = true
 clip_contents = false
 custom_minimum_size = Vector2(800, 0)
@@ -84,7 +85,12 @@ text = "Choices:"
 fit_content = true
 scroll_active = false
 
-[node name="ButtonTemplate" type="Button" parent="MarginContainer/VBoxContainer/CenterContainer/Choices"]
+[node name="ButtonTemplate" type="Button" parent="MarginContainer/VBoxContainer/PromptAndChoices/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Selection 1"
+
+[node name="Choices" type="GridContainer" parent="MarginContainer/VBoxContainer/PromptAndChoices/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
