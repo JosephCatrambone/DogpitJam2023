@@ -149,7 +149,9 @@ func _load_text(data: Dictionary):
 
 func _maybe_advance_dialog(delta):
 	if self.text_advancement_paused_on_input:
-		if Input.is_anything_pressed() or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		# This one feels a little better:
+		#if Input.is_anything_pressed() or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if Input.is_action_just_pressed("ui_accept") or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			self.text_advancement_paused_on_input = false
 		else:
 			return
@@ -165,7 +167,11 @@ func _maybe_advance_dialog(delta):
 		if self.dialog_out.visible_characters < len(self.dialog_out.text):
 			last_char_output = self.dialog_out.text[self.dialog_out.visible_characters]
 		
-		# Check if we need to pause.
+		# If the player is holding down a button or the mouse, advance at full speed.
+		#if Input.is_action_pressed("ui_accept"):
+		#	self.time_to_next_character = 0.0
+		
+		# Check if we need to pause because the next character will trigger a swap.
 		if last_char_output == '.':
 			self.time_to_next_character *= self.period_pause_time_scale
 		if last_char_output == "\n" or self.character_index_to_actor_switch.has(self.dialog_out.visible_characters+1):
