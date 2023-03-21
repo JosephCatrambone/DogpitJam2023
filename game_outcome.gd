@@ -1,8 +1,9 @@
 class_name GameOutcome
 
 enum GameOutcome {
-	WIN,
-	LOSE,
-	DRAW,
+	DRAW = 0,
+	LOSE = 1,
+	WIN = 2,
 	# Incomplete?
 }
+
