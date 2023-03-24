@@ -1,5 +1,6 @@
 extends Node
 
+var time_between_characters: float = 0.01
 var vn_scene: PackedScene = preload("res://visual_novel/visual_novel_scene.tscn")
 var active_scene: Node = null
 
@@ -76,8 +77,8 @@ func save_default_story():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	self.save_default_story()
-	var fin = FileAccess.open("user://default_story.json", FileAccess.READ)
+	#self.save_default_story()
+	var fin = FileAccess.open("res://default_story.json", FileAccess.READ)
 	self.load_story_from_json(fin.get_as_text())
 
 
@@ -91,4 +92,5 @@ func switch_scene(scene_name: String):
 	if not self._story.has(scene_name):
 		printerr("Scene name '", scene_name, "' not found in story.")
 	new_scene.load_dialog(self._story[scene_name])
+	new_scene.time_between_characters = self.time_between_characters
 	self.active_scene = new_scene

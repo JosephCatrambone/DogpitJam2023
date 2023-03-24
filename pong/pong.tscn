@@ -1,0 +1,131 @@
+[gd_scene load_steps=10 format=3 uid="uid://dj7us28tcd8ta"]
+
+[ext_resource type="PackedScene" uid="uid://s7wrssvy56t7" path="res://pong/paddle.tscn" id="1_4aist"]
+[ext_resource type="Script" path="res://pong/pong.gd" id="1_6nln8"]
+[ext_resource type="PackedScene" uid="uid://bi0mjukq2bo1p" path="res://pong/ball.tscn" id="2_h2v3q"]
+[ext_resource type="Texture2D" uid="uid://uewb7b58jjle" path="res://pong/vertical_stripe.png" id="2_qmxfc"]
+[ext_resource type="FontFile" uid="uid://dcevo1j5nf1r7" path="res://pong/8bit16.ttf" id="3_7lh63"]
+[ext_resource type="AudioStream" uid="uid://bx81yorss71bd" path="res://pong/win.wav" id="6_e2vgs"]
+[ext_resource type="AudioStream" uid="uid://c7b2my6naubm6" path="res://pong/lose.wav" id="7_di83w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7jd5i"]
+size = Vector2(59, 715)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uk6wb"]
+size = Vector2(68, 717)
+
+[node name="Pong" type="Node2D"]
+script = ExtResource("1_6nln8")
+
+[node name="Background" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Fade" type="ColorRect" parent="Background"]
+custom_minimum_size = Vector2(1280, 720)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1240.0
+offset_bottom = 680.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.968627)
+
+[node name="MiddleNet" type="TextureRect" parent="Background"]
+layout_mode = 0
+offset_left = 620.0
+offset_right = 652.0
+offset_bottom = 720.0
+texture = ExtResource("2_qmxfc")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="LeftNet" type="TextureRect" parent="Background"]
+layout_mode = 0
+offset_left = -21.0
+offset_right = 11.0
+offset_bottom = 720.0
+texture = ExtResource("2_qmxfc")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="RightNet" type="TextureRect" parent="Background"]
+layout_mode = 0
+offset_left = 1272.0
+offset_right = 1304.0
+offset_bottom = 720.0
+texture = ExtResource("2_qmxfc")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="LeftScore" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 320.0
+offset_top = 180.0
+offset_right = 416.0
+offset_bottom = 263.0
+theme_override_fonts/font = ExtResource("3_7lh63")
+theme_override_font_sizes/font_size = 128
+text = "0"
+
+[node name="RightScore" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 960.0
+offset_top = 180.0
+offset_right = 1056.0
+offset_bottom = 263.0
+theme_override_fonts/font = ExtResource("3_7lh63")
+theme_override_font_sizes/font_size = 128
+text = "0"
+
+[node name="PaddleLeft" parent="." node_paths=PackedStringArray("follow_ball") instance=ExtResource("1_4aist")]
+position = Vector2(40, 340)
+follow_ball = NodePath("../Ball")
+
+[node name="PaddleRight" parent="." instance=ExtResource("1_4aist")]
+position = Vector2(1240, 360)
+
+[node name="LeftGoal" type="Area2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(-21, 346)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftGoal"]
+shape = SubResource("RectangleShape2D_7jd5i")
+
+[node name="RightGoal" type="Area2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1308, 345)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightGoal"]
+shape = SubResource("RectangleShape2D_uk6wb")
+
+[node name="Ball" parent="." instance=ExtResource("2_h2v3q")]
+unique_name_in_owner = true
+position = Vector2(622, 340)
+
+[node name="Boundary" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Boundary"]
+polygon = PackedVector2Array(-84, -114, -21, 26, 1383, 19, 1385, 691, -86, 699, -87, 26, -39, 28, -126, -116, -297, -35, -264, 820, 1473, 819, 1472, -158)
+
+[node name="BallStartPosition" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(640, 360)
+
+[node name="AudioListener2D" type="AudioListener2D" parent="."]
+position = Vector2(640, 360)
+current = true
+
+[node name="LeftGoalNoise" type="AudioStreamPlayer2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, 360)
+stream = ExtResource("6_e2vgs")
+
+[node name="RightGoalNoise" type="AudioStreamPlayer2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1280, 360)
+stream = ExtResource("7_di83w")

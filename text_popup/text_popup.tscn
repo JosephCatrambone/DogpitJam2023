@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://o2fhy7473ym2"]
+
+[ext_resource type="Script" path="res://text_popup/text_popup.gd" id="1_us5x8"]
+
+[node name="TextPopup" type="Control"]
+z_index = 5
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_us5x8")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CenterContainer"]
+self_modulate = Color(0, 0, 0, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "Text Here"
+horizontal_alignment = 1
+vertical_alignment = 1

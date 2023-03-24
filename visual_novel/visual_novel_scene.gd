@@ -3,9 +3,14 @@ extends Control
 @export var non_speaking_color: Color = Color(0.8, 0.8, 0.8, 0.8)
 @export var period_pause_time_scale: float = 10  # When we hit a period, we wait for time_between_characters * this.
 
-@onready var time_between_characters: float = 0.01
+@export var time_between_characters: float = 0.01
 var time_to_next_character: float = 0.0
 var text_advancement_paused_on_input: bool = false
+var terminal_events_fired: bool = false  # Something of a trigger hack.  This is set to true when the finish condition fires because we aren't properly blocking on the minigame stuff.
+
+# Silly input tracking because we have no real concept of mouse released:
+var mouse_released: bool = false
+var mouse_just_released: bool = false  # Trigger advances on mouse-up.
 
 var _loaded: bool = false
 var _raw_data: Dictionary
@@ -23,11 +28,14 @@ var minigame_outcomes: Dictionary = {}  # Maps to game_outcome.
 @onready var choices: GridContainer = %Choices
 @onready var prompt: RichTextLabel = %Prompt
 
+@onready var type_noise: AudioStreamPlayer = %TickNoise
+
 @onready var speaker_template: TextureRect = %SpeakerTemplate
 @onready var button_template: Button = %ButtonTemplate
 
 
 func _ready():
+	print_debug("New dialog spawn")
 	self.speaker_images.remove_child(self.speaker_template)
 	self.button_template.get_parent().remove_child(self.button_template)
 	self.dialog_out.visible = true
@@ -36,6 +44,25 @@ func _ready():
 
 func _process(delta):
 	self._maybe_advance_dialog(delta)
+	
+	# Special handling for triggering on mouse release.
+	self.mouse_just_released = false
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		self.mouse_released = false
+	else:
+		if not self.mouse_released:
+			self.mouse_just_released = true
+		self.mouse_released = true
+
+
+func fade_in():
+	self.modulate.a = 0.0
+	create_tween().tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 1.0)
+
+
+func fade_out():
+	self.modulate.a = 1.0
+	create_tween().tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 0.0), 1.0)
 
 
 func goto_title():
@@ -151,7 +178,7 @@ func _maybe_advance_dialog(delta):
 	if self.text_advancement_paused_on_input:
 		# This one feels a little better:
 		#if Input.is_anything_pressed() or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		if Input.is_action_just_pressed("ui_accept") or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if Input.is_action_just_released("ui_accept") or self.mouse_just_released:
 			self.text_advancement_paused_on_input = false
 		else:
 			return
@@ -159,29 +186,31 @@ func _maybe_advance_dialog(delta):
 	self.time_to_next_character -= delta
 	
 	# Advance the caret, unless we're going past the end.
-	if self.time_to_next_character <= 0.0 and self.dialog_out.visible_characters < len(self.dialog_out.text):
-		# Advance the caret:
+	var caret: int = self.dialog_out.visible_characters
+	var character_just_shown = ''
+	var just_finished: bool = false
+	if self.time_to_next_character <= 0.0 and caret < len(self.dialog_out.text):
 		self.time_to_next_character = self.time_between_characters
 		self.dialog_out.visible_characters += 1
-		var last_char_output = ''
-		if self.dialog_out.visible_characters < len(self.dialog_out.text):
-			last_char_output = self.dialog_out.text[self.dialog_out.visible_characters]
+		self.type_noise.play()
+		if caret+1 < len(self.dialog_out.text):
+			character_just_shown = self.dialog_out.text[caret+1]
 		
 		# If the player is holding down a button or the mouse, advance at full speed.
 		#if Input.is_action_pressed("ui_accept"):
 		#	self.time_to_next_character = 0.0
 		
 		# Check if we need to pause because the next character will trigger a swap.
-		if last_char_output == '.':
+		if character_just_shown == '.':
 			self.time_to_next_character *= self.period_pause_time_scale
-		if last_char_output == "\n" or self.character_index_to_actor_switch.has(self.dialog_out.visible_characters+1):
+		if character_just_shown == "\n":
 			self.text_advancement_paused_on_input = true
 		
 		# We are changing speakers:
 		# TODO: This triggers at the same time as the delay.
 		# TODO: This does not trigger expression changes if they happen at character zero, so we have to hack it and add a space or a newline.
-		if self.character_index_to_actor_switch.has(self.dialog_out.visible_characters):
-			var new_visible_character: String = self.character_index_to_actor_switch[self.dialog_out.visible_characters]
+		if self.character_index_to_actor_switch.has(caret):
+			var new_visible_character: String = self.character_index_to_actor_switch[caret]
 			var new_speaker: String = ""
 			var new_emotion: String = ""
 			if ":" in new_visible_character:
@@ -191,23 +220,30 @@ func _maybe_advance_dialog(delta):
 			else:
 				new_speaker = new_visible_character
 			self.set_speaker(new_speaker, new_emotion)
-		# Finishing the dialog:
+		
 		if self.dialog_out.visible_ratio >= 1.0:
-			# Done!
-			# We will automatically display options and move forward so that we can 'hack' stuff by making many scenes which automatically connect.
-			# If a player wants to pause before prompts, they can add '\n'.
-			if not self.prompt.text.is_empty():
-				self.dialog_out.visible = false
-				self.prompt_and_choices.visible = true
-			elif not self.minigame_name.is_empty():
-				var outcome = await GameManager.start_minigame(self.minigame_name)
-				StoryManager.switch_scene(self.minigame_outcomes[outcome])
-			elif not self.next_scene.is_empty():
-				StoryManager.switch_scene(self.next_scene)
-			else:
-				# We have no dialog active, no new scene, no prompts, and no minigame.
-				# Self destruct.
-				self.queue_free()
+			just_finished = true
+				
+	# Finishing the dialog:
+	if (just_finished or len(self.dialog_out.text) == 0) and not self.terminal_events_fired:
+		self.terminal_events_fired = true
+		# Done!
+		# We will automatically display options and move forward so that we can 'hack' stuff by making many scenes which automatically connect.
+		# If a player wants to pause before prompts, they can add '\n'.
+		if not self.prompt.text.is_empty():
+			self.dialog_out.visible = false
+			self.prompt_and_choices.visible = true
+		elif not self.minigame_name.is_empty():
+			print_debug("Starting minigame")
+			var outcome = await GameManager.start_minigame(self.minigame_name)
+			StoryManager.switch_scene(self.minigame_outcomes[outcome])
+		elif not self.next_scene.is_empty():
+			StoryManager.switch_scene(self.next_scene)
+		else:
+			# We have no dialog active, no new scene, no prompts, and no minigame.
+			# Self destruct.
+			self.queue_free()
+		
 
 
 func set_speaker(name: String, emotion: String = ""):

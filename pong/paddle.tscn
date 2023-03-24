@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://s7wrssvy56t7"]
+
+[ext_resource type="Script" path="res://pong/paddle.gd" id="1_o0m3u"]
+[ext_resource type="Texture2D" uid="uid://1v8w3ht5dgaw" path="res://pong/bone.svg" id="2_uwwc4"]
+
+[node name="Paddle" type="AnimatableBody2D"]
+script = ExtResource("1_o0m3u")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-5, -59, 7, -57, 26, -55, 15, -28, 15, 35, 24, 58, 10, 63, -6, 63, -19, 55, -10, 41, -10, -30, -22, -53)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_uwwc4")

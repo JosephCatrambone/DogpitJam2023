@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://bi0mjukq2bo1p"]
+
+[ext_resource type="Script" path="res://pong/ball.gd" id="1_5fn1n"]
+[ext_resource type="Texture2D" uid="uid://dfso7jxknyv7g" path="res://pong/skull.svg" id="1_hqjp4"]
+[ext_resource type="AudioStream" uid="uid://cpl0o3hys5qkw" path="res://pong/bounce.wav" id="3_n1o7w"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_oyamu"]
+friction = 0.01
+bounce = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ih1s7"]
+radius = 32.0624
+
+[node name="Ball" type="RigidBody2D"]
+physics_material_override = SubResource("PhysicsMaterial_oyamu")
+gravity_scale = 0.0
+continuous_cd = 2
+max_contacts_reported = 1
+contact_monitor = true
+can_sleep = false
+angular_damp = 1.0
+script = ExtResource("1_5fn1n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ih1s7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_hqjp4")
+
+[node name="BounceNoise" type="AudioStreamPlayer2D" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("3_n1o7w")
+bus = &"SFX"

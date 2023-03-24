@@ -5,6 +5,7 @@ signal game_complete(GameOutcome)
 @export var mistake_probability: float = 0.01
 
 var game_over = null
+var terminal_signal_emitted: bool = false
 var current_player_x: bool = true  # Current player.  true -> x, false -> o.
 var board_state: PackedInt32Array = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # Keeps track of the game state.
 var board_marks: Array[TextureButton] = []  # References to the texture buttons for display.
@@ -141,6 +142,9 @@ func _process(delta):
 		# It's the AI's turn
 		var best_move = self._pick_best_move(self.board_state, self.mistake_probability)
 		self._mark(best_move)
-	if self.game_over != null:
+	if self.game_over != null and not self.terminal_signal_emitted:
 		# We have a win condition.
 		emit_signal("game_complete", self.game_over)
+		self.terminal_signal_emitted = true
+		#self.queue_free()
+		

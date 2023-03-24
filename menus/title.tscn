@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://dtiqpwbwi4rin"]
+[gd_scene load_steps=5 format=3 uid="uid://dtiqpwbwi4rin"]
 
 [ext_resource type="Theme" uid="uid://domv3v8hllefw" path="res://main_theme.tres" id="1_qpqkq"]
 [ext_resource type="Script" path="res://menus/title.gd" id="2_0rkm3"]
+[ext_resource type="AudioStream" uid="uid://b8jticv12hdnc" path="res://visual_novel/character_blip.wav" id="3_epmxc"]
+[ext_resource type="ButtonGroup" uid="uid://cd2yph4p2f66e" path="res://menus/text_speed_button_group.tres" id="3_wjimj"]
 
 [node name="TitleMenu" type="Control"]
 layout_mode = 3
@@ -13,10 +15,182 @@ grow_vertical = 2
 theme = ExtResource("1_qpqkq")
 script = ExtResource("2_0rkm3")
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 0
-offset_left = 564.0
-offset_top = 328.0
-offset_right = 620.0
-offset_bottom = 368.0
-text = "Title"
+[node name="Main" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -76.5
+offset_top = -20.5
+offset_right = 76.5
+offset_bottom = 20.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="Main"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "Odd Soul"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Play" type="Button" parent="Main"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "New Game"
+
+[node name="Settings" type="Button" parent="Main"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Settings"
+
+[node name="Credits" type="Button" parent="Main"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Credits"
+
+[node name="Settings" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -76.5
+offset_top = -20.5
+offset_right = 76.5
+offset_bottom = 20.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="SettingsLabel" type="Label" parent="Settings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="Settings"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Back"
+
+[node name="SFXVolume" type="HBoxContainer" parent="Settings"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Settings/SFXVolume"]
+layout_mode = 2
+text = "SFX Volume:"
+
+[node name="VolumeDown" type="Button" parent="Settings/SFXVolume"]
+layout_mode = 2
+text = "[-]"
+
+[node name="VolumeUp" type="Button" parent="Settings/SFXVolume"]
+layout_mode = 2
+text = "[+]"
+
+[node name="VolumeOut" type="Label" parent="Settings/SFXVolume"]
+layout_mode = 2
+text = "0"
+
+[node name="AmbianceVolume" type="HBoxContainer" parent="Settings"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Settings/AmbianceVolume"]
+layout_mode = 2
+text = "Ambiance Volume:"
+
+[node name="VolumeDown" type="Button" parent="Settings/AmbianceVolume"]
+layout_mode = 2
+text = "[-]"
+
+[node name="VolumeUp" type="Button" parent="Settings/AmbianceVolume"]
+layout_mode = 2
+text = "[+]"
+
+[node name="VolumeOut" type="Label" parent="Settings/AmbianceVolume"]
+layout_mode = 2
+text = "0"
+
+[node name="TextSpeed" type="HBoxContainer" parent="Settings"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Settings/TextSpeed"]
+layout_mode = 2
+text = "Text Speed:"
+
+[node name="Slow" type="Button" parent="Settings/TextSpeed"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_wjimj")
+text = "Slow"
+
+[node name="Medium" type="Button" parent="Settings/TextSpeed"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_wjimj")
+text = "Medium"
+
+[node name="Fast" type="Button" parent="Settings/TextSpeed"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_wjimj")
+text = "Fast"
+
+[node name="Credits" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -185.0
+offset_top = -124.5
+offset_right = 185.0
+offset_bottom = 124.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="Credits"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "Credits"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Back" type="Button" parent="Credits"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Back"
+
+[node name="BloopNoise" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("3_epmxc")
+
+[connection signal="pressed" from="Main/Play" to="." method="_start_game"]
+[connection signal="pressed" from="Main/Settings" to="." method="_show_settings_menu"]
+[connection signal="pressed" from="Main/Credits" to="." method="_show_credits_menu"]
+[connection signal="pressed" from="Settings/BackButton" to="." method="_show_main_menu"]
+[connection signal="pressed" from="Settings/SFXVolume/VolumeDown" to="." method="_on_sfx_volume_down_pressed"]
+[connection signal="pressed" from="Settings/SFXVolume/VolumeUp" to="." method="_on_sfx_volume_up_pressed"]
+[connection signal="pressed" from="Settings/TextSpeed/Slow" to="." method="_set_text_speed_slow"]
+[connection signal="pressed" from="Settings/TextSpeed/Medium" to="." method="_set_text_speed_medium"]
+[connection signal="pressed" from="Settings/TextSpeed/Fast" to="." method="_set_text_speed_fast"]
+[connection signal="pressed" from="Credits/Back" to="." method="_show_main_menu"]
