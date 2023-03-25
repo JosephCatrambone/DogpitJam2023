@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dtiqpwbwi4rin"]
 
-[ext_resource type="Theme" uid="uid://domv3v8hllefw" path="res://main_theme.tres" id="1_qpqkq"]
+[ext_resource type="Theme" path="res://main_theme.tres" id="1_qpqkq"]
 [ext_resource type="Script" path="res://menus/title.gd" id="2_0rkm3"]
 [ext_resource type="AudioStream" uid="uid://b8jticv12hdnc" path="res://visual_novel/character_blip.wav" id="3_epmxc"]
 [ext_resource type="ButtonGroup" uid="uid://cd2yph4p2f66e" path="res://menus/text_speed_button_group.tres" id="3_wjimj"]
@@ -190,9 +190,8 @@ Godot
 Bfxr
 Inkscape
 
-Special thanks to
+Special thanks to:
 Team Dogpit for hosting the jam!
-and
 You for playing!"
 horizontal_alignment = 1
 vertical_alignment = 1

@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dmokb8m05268r"]
+[gd_scene load_steps=5 format=3 uid="uid://dmokb8m05268r"]
 
-[ext_resource type="Theme" uid="uid://domv3v8hllefw" path="res://main_theme.tres" id="1_56jud"]
+[ext_resource type="Theme" path="res://main_theme.tres" id="1_56jud"]
 [ext_resource type="Script" path="res://visual_novel/visual_novel_scene.gd" id="1_dh33b"]
-[ext_resource type="Texture2D" uid="uid://qjin4x3sq4iy" path="res://assets/cafe_blurred.png" id="3_5hg7u"]
-[ext_resource type="Texture2D" uid="uid://l7mgppwkjkrr" path="res://assets/blue.svg" id="3_46g25"]
+[ext_resource type="Texture2D" uid="uid://bjkv3ahldum6d" path="res://icon.svg" id="3_el7ma"]
 [ext_resource type="AudioStream" uid="uid://b8jticv12hdnc" path="res://visual_novel/character_blip.wav" id="5_ast0s"]
 
 [node name="VisualNovelScene" type="Control"]
@@ -26,7 +25,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_5hg7u")
+texture = ExtResource("3_el7ma")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -53,7 +52,7 @@ alignment = 1
 [node name="SpeakerTemplate" type="TextureRect" parent="MarginContainer/VBoxContainer/Speakers"]
 unique_name_in_owner = true
 layout_mode = 2
-texture = ExtResource("3_46g25")
+texture = ExtResource("3_el7ma")
 expand_mode = 3
 stretch_mode = 5
 

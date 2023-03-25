@@ -1,6 +1,6 @@
-[gd_resource type="Theme" load_steps=4 format=3 uid="uid://domv3v8hllefw"]
+[gd_resource type="Theme" load_steps=4 format=3]
 
-[ext_resource type="FontFile" uid="uid://c12gwptxuh4p0" path="res://assets/ComicNeue-Regular.ttf" id="1_2jqed"]
+[ext_resource type="FontFile" uid="uid://cfjtye2y8laik" path="res://ComicNeue-Regular.ttf" id="1_2jqed"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qwjy6"]
 content_margin_left = 2.0
