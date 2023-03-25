@@ -180,6 +180,23 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 text = "Back"
 
+[node name="Label2" type="Label" parent="Credits"]
+layout_mode = 2
+text = "
+A game by Joseph Catrambone.
+
+Tools Used:
+Godot
+Bfxr
+Inkscape
+
+Special thanks to
+Team Dogpit for hosting the jam!
+and
+You for playing!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="BloopNoise" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("3_epmxc")

@@ -1,5 +1,7 @@
 extends Control
 
+const RUN_NAME: String = "run"
+
 @export var non_speaking_color: Color = Color(0.8, 0.8, 0.8, 0.8)
 @export var period_pause_time_scale: float = 10  # When we hit a period, we wait for time_between_characters * this.
 
@@ -114,6 +116,9 @@ func _load_actors(data: Dictionary):
 		self.actor_name_to_texture_rect[a_name.to_lower()] = r
 		r.texture = StoryManager.get_character(a_name)
 		self.speaker_images.add_child(r)
+		# There's one special case: we cannot have an actor named 'run' since we reserve that for triggers.
+		if a_name.to_lower() == RUN_NAME:
+			printerr("ERROR: Scene has 'run' as a character name.")
 
 
 func _load_choices(data: Dictionary):
